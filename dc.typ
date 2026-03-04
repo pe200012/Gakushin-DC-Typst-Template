@@ -120,7 +120,13 @@
 // 全局页面设置
 // ======================
 #set text(font: "Yu Mincho", size: 11pt)
-#set par(first-line-indent: 0pt)
+
+// 本文段落の字下げ（LaTeX 版の \parindent ≒ 1zw に合わせる）
+#let par_indent = 10.5pt
+#set par(first-line-indent: (amount: par_indent, all: true))
+
+// \noindent 相当
+#let noindent(body) = par(first-line-indent: 0pt)[#body]
 
 // LaTeX 模板中 \section 不显示，这里默认隐藏 1 级标题（= ...）
 #show heading.where(level: 1): it => []
@@ -164,7 +170,7 @@
 // 正文（请在各栏目内填写）
 // ======================
 #subject("01", "研究の概要と位置づけ", 1)[
-  #underline([*研究課題名：#kenkyu_kadai*])
+  #noindent[#underline([*研究課題名：#kenkyu_kadai*])]
 
   象の卵の研究の目的は．．．
   象の卵の研究計画と方法は．．．
@@ -193,7 +199,7 @@
 #subject("04", "【４】研究遂行力の自己分析", 2, last: true)[
   #SelfReviewInstructions()
 
-  *(1) 研究に関する自身の強み*
+  #noindent[*(1) 研究に関する自身の強み*]
 
   応募者は過去20年間、研究を遂行してきた強靭な能力を有する。
 
@@ -201,7 +207,7 @@
   + ``Theory of Elephant Eggs'', H. Yukawa et al., Phys. Rev. Lett. (2005).
 
   #v(5mm)
-  *(2) 今後研究者として更なる発展のため必要と考えている要素*
+  #noindent[*(2) 今後研究者として更なる発展のため必要と考えている要素*]
 
   研究費を獲得する術。
 ]
