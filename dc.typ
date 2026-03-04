@@ -54,7 +54,8 @@
   move(dx: -17.4mm)[
     #image("subject_headers/dc_header_" + id + ".pdf", width: 210mm)
   ]
-  v(-4mm)
+  // LaTeX 版のヘッダ直後にはわずかな余白があるため、Typst 側では詰めすぎない
+  v(-0.9mm)
 }
 
 #let include_fullwidth_pdf(path) = {
