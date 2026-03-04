@@ -1,0 +1,201 @@
+// DC（JSPS 特别研究员）Typst 模板（基于 LaTeX 版式 1:1 复刻）
+// 你只需要修改本文件。
+
+// ======================
+// 基本信息（请修改）
+// ======================
+#let kenkyu_kadai = "象の卵"
+#let shinseisha_name = "湯川秀樹"
+
+// ======================
+// 版面常量（来自 LaTeX 参考 PDF 的 bbox）
+// ======================
+#let page_offset = 2
+#let a4_width = 595.28pt
+#let page_center_x = 297.64pt
+
+// 页脚（右侧栏位 + 姓名）
+#let footer_x_label = 344.885pt
+#let footer_x_name = 502.242pt
+#let footer_x_right = 544.230pt
+#let footer_y_text = 798.225pt
+#let footer_y_line = 808.722pt
+
+// 续页页眉（“（…の続き）”）
+#let cont_x = 50.082pt
+#let cont_y = 45.033pt
+
+// ======================
+// 工具函数
+// ======================
+#let zenkaku(s) = (
+  s
+    .replace("0", "０")
+    .replace("1", "１")
+    .replace("2", "２")
+    .replace("3", "３")
+    .replace("4", "４")
+    .replace("5", "５")
+    .replace("6", "６")
+    .replace("7", "７")
+    .replace("8", "８")
+    .replace("9", "９")
+)
+
+#let disp_page() = counter(page).get().first() + page_offset
+
+#let header_strip(id) = {
+  // 全宽表头条带：左移使其对齐页面左边缘
+  move(dx: -17.4mm)[
+    #image("subject_headers/dc_header_" + id + ".pdf", width: 210mm)
+  ]
+  v(-4mm)
+}
+
+#let include_fullwidth_pdf(path) = {
+  move(dx: -17.4mm)[#image(path, width: 210mm)]
+}
+
+#let JSPSInstructions() = {
+  set text(fill: red)
+  [(
+    #raw("\\JSPSInstructions")
+    をコメントアウトしてください。
+  )]
+  set text(fill: black)
+  include_fullwidth_pdf("subject_headers/inst_general.pdf")
+}
+
+#let SelfReviewInstructions() = {
+  set text(fill: red)
+  [(
+    #raw("\\SelfReviewInstructions")
+    をコメントアウトしてください。
+  )]
+  set text(fill: black)
+  include_fullwidth_pdf("subject_headers/inst_self_review.pdf")
+}
+
+// 固定页数栏目：超页报错、不足补页
+// 注意：不能在同一个 `context { ... }` 内用 counter(page).get() 计算前后页差，
+// 因为 context 绑定到单一位置。这里用 `here()` 捕获起止 location，再用 counter.at 做“时间旅行”。
+#let subject(id, name, max_pages, last: false, body) = {
+  let start_loc = state("dc-subject-" + id + "-start", none)
+  let end_loc = state("dc-subject-" + id + "-end", none)
+
+  // 捕获栏目开始位置
+  context { start_loc.update(here()); none }
+
+  header_strip(id)
+  body
+
+  // 捕获栏目结束位置（在补页之前）
+  context { end_loc.update(here()); none }
+
+  // 计算实际占用页数，并补足到固定页数
+  context {
+    let start = counter(page).at(start_loc.get()).first()
+    let end = counter(page).at(end_loc.get()).first()
+    let used = end - start + 1
+
+    if used > max_pages {
+      panic("「" + name + "」は " + str(max_pages) + " ページ以内で書いてください。")
+    }
+
+    for _ in range(max_pages - used) {
+      pagebreak()
+    }
+
+    pagebreak(weak: last)
+  }
+}
+
+// ======================
+// 全局页面设置
+// ======================
+#set text(font: "Yu Mincho", size: 11pt)
+#set par(first-line-indent: 0pt)
+
+// LaTeX 模板中 \section 不显示，这里默认隐藏 1 级标题（= ...）
+#show heading.where(level: 1): it => []
+
+#set page(
+  paper: "a4",
+  margin: (left: 17.4mm, right: 17.4mm, top: 20mm, bottom: 20mm),
+  // 使用 background 做绝对定位，复刻 fancyhdr 的页脚与续页页眉
+  background: context {
+    // -------- 页脚（中心页码 + 右侧姓名栏） --------
+    set text(font: "Yu Mincho", size: 11pt)
+
+    // 右侧：申請者登録名 + 下划线 + 姓名
+    place(top + left, dx: footer_x_label, dy: footer_y_text)[申請者登録名]
+    place(top + left, dx: footer_x_label, dy: footer_y_line)[
+      #line(length: footer_x_right - footer_x_label, stroke: 0.8pt)
+    ]
+    place(top + left, dx: footer_x_name, dy: footer_y_text)[#shinseisha_name]
+
+    // 中心：– ３ –（显示页码从 3 开始；数字全角）
+    let p = disp_page()
+    let center = [– #(zenkaku(str(p))) –]
+    let w = measure(center).width
+    place(top + left, dx: page_center_x - w / 2, dy: footer_y_text)[#center]
+
+    // -------- 续页页眉（仅固定页号出现） --------
+    set text(font: "Yu Mincho", size: 8pt)
+    let phys = counter(page).get().first()
+
+    if phys == 3 {
+      place(top + left, dx: cont_x, dy: cont_y)[(【２】研究計画（２）研究目的・内容等の続き)]
+    }
+
+    if phys == 6 {
+      place(top + left, dx: cont_x, dy: cont_y)[(【４】研究遂行力の自己分析の続き)]
+    }
+  },
+)
+
+// ======================
+// 正文（请在各栏目内填写）
+// ======================
+#subject("01", "研究の概要と位置づけ", 1)[
+  #underline([*研究課題名：#kenkyu_kadai*])
+
+  象の卵の研究の目的は．．．
+  象の卵の研究計画と方法は．．．
+
+  風呂で巨大な温泉卵について考えていて、ふと思いついた。
+  準備はしようとしている。
+  唯一無二。
+]
+
+#subject("02", "【２】研究計画（２）研究目的・内容等", 2)[
+  #JSPSInstructions()
+
+  *＊＊＊ 以下は、あくまで例です。真似しないでください。＊＊＊*
+
+  象の卵の研究計画は．．．
+
+  #v(8mm)
+  *参考文献*
+  + 寺村輝夫、「ぼくは王様 - ぞうのたまごのたまごやき」.
+]
+
+#subject("03", "人権の保護及び法令等の遵守への対応", 1)[
+  象の卵のES細胞の培養、象のクローンの生成などは行わない。
+]
+
+#subject("04", "【４】研究遂行力の自己分析", 2, last: true)[
+  #SelfReviewInstructions()
+
+  *(1) 研究に関する自身の強み*
+
+  応募者は過去20年間、研究を遂行してきた強靭な能力を有する。
+
+  + ``Search for whale eggs'', H. Yukawa et al., Rev. Oceanic Mysteries (2017).
+  + ``Theory of Elephant Eggs'', H. Yukawa et al., Phys. Rev. Lett. (2005).
+
+  #v(5mm)
+  *(2) 今後研究者として更なる発展のため必要と考えている要素*
+
+  研究費を獲得する術。
+]
