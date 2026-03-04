@@ -1,5 +1,10 @@
-// DC（JSPS 特别研究员）Typst 模板（基于 LaTeX 版式 1:1 复刻）
-// 你只需要修改本文件。
+// JSPS 特別研究員（DC）申請書 Typst テンプレート（LaTeX 版 1:1 移植）
+//
+// Credits:
+// - Original LaTeX template (KakenhiLaTeX / 科研費LaTeX): Taku Yamanaka (Osaka Univ.)
+//   http://osksn2.hep.sci.osaka-u.ac.jp/~taku/kakenhiLaTeX/
+//
+// 本ファイル（dc.typ）だけ編集すれば申請書本文を作成できます。
 
 // ======================
 // 基本信息（请修改）

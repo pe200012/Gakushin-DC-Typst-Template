@@ -1,29 +1,49 @@
-# DC（JSPS 特别研究员）Typst 模板（1:1 复刻版）
+# JSPS 特別研究員（DC）申請書 Typst テンプレート（LaTeX 版 1:1 移植）
 
-本目录是将 `dc-latex-ref/dc_utf_single/` 的 LaTeX 版式迁移到 Typst 的版本。
+このディレクトリは、[DC 申請書 LaTeX テンプレート](https://osksn2.hep.sci.osaka-u.ac.jp/~taku/kakenhiLaTeX/) を Typst に移植したものです。
+レイアウトと挙動（固定ページ数・表頭 PDF の貼り付け・超過時エラーなど）を可能な限り 1:1 で再現しています。
 
-## 你需要编辑的文件
-- `dc.typ`（单文件入口，直接写正文）
+## 編集するファイル
+- `dc.typ`（単一ファイル。本文はここに記入）
 
-## 编译
-在本目录执行：
+## コンパイル
+このディレクトリで実行してください（Typst の project root 制約のため）。
 
 ```bash
 typst compile dc.typ dc.pdf
 ```
 
-## 重要行为（与 LaTeX 模板一致）
-- 纸张：A4
-- 边距：左右 17.4mm，上下 20mm
-- 四个栏目固定页数：1 / 2 / 1 / 2（总 6 页）
-- 每个栏目第一页会自动插入 `subject_headers/dc_header_01..04.pdf` 表头条带
-- 若正文超出栏目允许页数：Typst 编译会 `panic` 并报错
-- 若正文不足：自动补空白页至规定页数
+## 仕様（LaTeX 版と同等の挙動）
+- 用紙：A4
+- 余白：左右 17.4mm、上下 20mm
+- 4 つの欄の固定ページ数：1 / 2 / 1 / 2（合計 6 ページ）
+- 各欄の 1 ページ目に `subject_headers/dc_header_01..04.pdf` を全幅で自動挿入
+- 本文が上限ページ数を超えた場合：Typst コンパイルが `panic` してエラー
+- 本文が不足した場合：規定ページ数まで自動で空白ページを補完
+- 画面上のページ番号表示：`– ３ –` から開始（中央）。
+- 「（…の続き）」ヘッダ：本書式の固定ページ構成に合わせ、物理ページ 3 / 6 のみに表示
 
-## 资产
-- `subject_headers/` 下的 PDF 来自官方表头/说明条带，模板直接引用。
-- 如需更新到新年度表头，请替换该目录中的对应 PDF（并保持文件名不变）。
+## 画像アセット（表頭・注意書き）
+- `subject_headers/` 配下の PDF は、元 LaTeX テンプレートが同梱している **公式の表頭／注意書き PDF** をそのまま利用します。
+- 年度更新等で差し替える場合は、`subject_headers/` の PDF を同名のまま置換してください。
 
-## 说明框（可选）
-模板提供 `JSPSInstructions()` / `SelfReviewInstructions()`，用于显示红色提醒 + 官方说明 PDF。
-提交前通常需要删除对应调用。
+## 注意書き（説明ボックス）
+テンプレートには以下の補助関数があります：
+- `JSPSInstructions()`
+- `SelfReviewInstructions()`
+
+これらは **赤字の注意 + 公式説明 PDF** を本文中に表示します。
+提出用 PDF を作る際は、通常これらの呼び出しを削除（またはコメントアウト）してください。
+
+## Acknowledgement
+本 Typst 版は、以下の LaTeX テンプレート（配布物）を元に移植しました。
+
+- **科研費LaTeX / KakenhiLaTeX**（JSPS 関連申請書類の LaTeX テンプレート群）
+- 作成：**山中 卓（Taku Yamanaka, 大阪大学）**
+- 参考：配布物に同梱の `A_README.pdf` および `pieces/kakenhi7.tex` の記載
+- Web: http://osksn2.hep.sci.osaka-u.ac.jp/~taku/kakenhiLaTeX/
+
+ライセンス／利用条件は、元配布物に記載の条件に従ってください（`pieces/kakenhi7.tex` 末尾に Fair License の記載があります）。
+
+## 免責
+本テンプレートは非公式の移植版です。提出前に、生成された PDF が最新の様式要件を満たしているか必ず確認してください。
