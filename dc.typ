@@ -30,6 +30,13 @@
 #let cont_x = 50.082pt
 #let cont_y = 45.033pt
 
+// 第1页右上角の追加ヘッダ（LaTeX 版 fancyhdr の重ね書きを再現）
+#let first_header_ascii_x = 435.372pt
+#let first_header_ascii_y = 44.354pt
+#let first_header_jp_x = 459.463pt
+#let first_header_jp_y = 44.513pt
+#let first_header_rparen_x = 539.987pt
+
 // ======================
 // 工具函数
 // ======================
@@ -155,6 +162,13 @@
     // -------- 续页页眉（仅固定页号出现） --------
     set text(font: "Yu Mincho", size: 8pt)
     let phys = counter(page).get().first()
+
+    if phys == 1 {
+      place(top + left, dx: first_header_ascii_x, dy: first_header_ascii_y)[#text(font: "CMU Serif", size: 10.5pt)[(DC]]
+      place(top + left, dx: first_header_jp_x, dy: first_header_jp_y)[#text(font: "Yu Mincho", size: 10.5pt)[申請内容ファイル]]
+      place(top + left, dx: first_header_rparen_x, dy: first_header_ascii_y)[#text(font: "CMU Serif", size: 10.5pt)[)]]
+      set text(font: "Yu Mincho", size: 8pt)
+    }
 
     if phys == 3 {
       place(top + left, dx: cont_x, dy: cont_y)[(【２】研究計画（２）研究目的・内容等の続き)]
