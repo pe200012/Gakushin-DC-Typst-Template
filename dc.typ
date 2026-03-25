@@ -30,12 +30,10 @@
 #let cont_x = 50.082pt
 #let cont_y = 45.033pt
 
-// 第1页右上角の追加ヘッダ（LaTeX 版 fancyhdr の重ね書きを再現）
-#let first_header_ascii_x = 435.372pt
-#let first_header_ascii_y = 44.354pt
-#let first_header_jp_x = 459.463pt
-#let first_header_jp_y = 44.513pt
-#let first_header_rparen_x = 539.987pt
+// 第1页右上角の追加ヘッダ（原 LaTeX 出力から文字 bbox ぴったりで切り出した画像を使用）
+#let first_page_header_exact_x = 420.12pt
+#let first_page_header_exact_y = 40.32pt
+#let first_page_header_exact_w = 128.16pt
 
 // ======================
 // 工具函数
@@ -57,8 +55,9 @@
 #let disp_page() = counter(page).get().first() + page_offset
 
 #let header_strip(id) = {
-  // 全宽表头条带：左移使其对齐页面左边缘
-  move(dx: -17.4mm)[
+  // 全宽表头条带：左移使其对齐页面左边缘。
+  // 另外将 PDF 本体略微上移，使第一页右上角 header 与 LaTeX 输出逐点对齐。
+  move(dx: -17.4mm, dy: -1.113pt)[
     #image("subject_headers/dc_header_" + id + ".pdf", width: 210mm)
   ]
   // LaTeX 版のヘッダ直後にはわずかな余白があるため、Typst 側では詰めすぎない
@@ -163,19 +162,22 @@
     set text(font: "Yu Mincho", size: 8pt)
     let phys = counter(page).get().first()
 
-    if phys == 1 {
-      place(top + left, dx: first_header_ascii_x, dy: first_header_ascii_y)[#text(font: "CMU Serif", size: 10.5pt)[(DC]]
-      place(top + left, dx: first_header_jp_x, dy: first_header_jp_y)[#text(font: "Yu Mincho", size: 10.5pt)[申請内容ファイル]]
-      place(top + left, dx: first_header_rparen_x, dy: first_header_ascii_y)[#text(font: "CMU Serif", size: 10.5pt)[)]]
-      set text(font: "Yu Mincho", size: 8pt)
-    }
-
     if phys == 3 {
       place(top + left, dx: cont_x, dy: cont_y)[(【２】研究計画（２）研究目的・内容等の続き)]
     }
 
     if phys == 6 {
       place(top + left, dx: cont_x, dy: cont_y)[(【４】研究遂行力の自己分析の続き)]
+    }
+  },
+  // 第1页右上角の `(DC 申請内容ファイル)` は foreground で上からかぶせ、
+  // 下層の header PDF 上の文字との差異を完全に消す。
+  foreground: context {
+    let phys = counter(page).get().first()
+    if phys == 1 {
+      place(top + left, dx: first_page_header_exact_x, dy: first_page_header_exact_y)[
+        #image("subject_headers/page1_header_exact.png", width: first_page_header_exact_w)
+      ]
     }
   },
 )
