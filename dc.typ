@@ -91,6 +91,8 @@
 // 固定页数栏目：超页报错、不足补页
 // 注意：不能在同一个 `context { ... }` 内用 counter(page).get() 计算前后页差，
 // 因为 context 绑定到单一位置。这里用 `here()` 捕获起止 location，再用 counter.at 做“时间旅行”。
+// 结束位置不能作为独立块级 `context` 放在 `body` 后面；否则 Typst 可能把它推到下一页，
+// 导致明明还在当前页的内容被误判为超页。这里改用行内 0pt box 记录结束位置。
 #let subject(id, name, max_pages, last: false, body) = {
   let start_loc = state("dc-subject-" + id + "-start", none)
   let end_loc = state("dc-subject-" + id + "-end", none)
@@ -98,11 +100,13 @@
   // 捕获栏目开始位置
   context { start_loc.update(here()); none }
 
-  header_strip(id)
-  body
-
-  // 捕获栏目结束位置（在补页之前）
-  context { end_loc.update(here()); none }
+  [
+    #header_strip(id)
+    #body
+    #box(width: 0pt, height: 0pt)[
+      #context { end_loc.update(here()); none }
+    ]
+  ]
 
   // 计算实际占用页数，并补足到固定页数
   context {
