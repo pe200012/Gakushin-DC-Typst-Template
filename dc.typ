@@ -17,7 +17,16 @@
 // ======================
 #let page_offset = 2
 #let a4_width = 595.28pt
+#let a4_height = 841.89pt
 #let page_center_x = 297.64pt
+
+// LaTeX 版面（dc_utf_single/pieces/form01_dcpd_header.tex）
+#let body_left_margin = 50.082pt
+#let body_text_width = 496pt
+#let body_right_margin = a4_width - body_left_margin - body_text_width
+#let body_top_margin = 20mm
+#let body_text_height = 254mm
+#let body_bottom_margin = a4_height - body_top_margin - body_text_height
 
 // 页脚（右侧栏位 + 姓名）
 #let footer_x_label = 344.885pt
@@ -57,7 +66,7 @@
 #let header_strip(id) = {
   // 全宽表头条带：左移使其对齐页面左边缘。
   // 另外将 PDF 本体略微上移，使第一页右上角 header 与 LaTeX 输出逐点对齐。
-  move(dx: -17.4mm, dy: -1.113pt)[
+  move(dx: -body_left_margin, dy: -1.113pt)[
     #image("subject_headers/dc_header_" + id + ".pdf", width: 210mm)
   ]
   // LaTeX 版のヘッダ直後にはわずかな余白があるため、Typst 側では詰めすぎない
@@ -65,7 +74,7 @@
 }
 
 #let include_fullwidth_pdf(path) = {
-  move(dx: -17.4mm)[#image(path, width: 210mm)]
+  move(dx: -body_left_margin)[#image(path, width: 210mm)]
 }
 
 #let JSPSInstructions() = {
@@ -143,7 +152,12 @@
 
 #set page(
   paper: "a4",
-  margin: (left: 17.4mm, right: 17.4mm, top: 20mm, bottom: 20mm),
+  margin: (
+    left: body_left_margin,
+    right: body_right_margin,
+    top: body_top_margin,
+    bottom: body_bottom_margin,
+  ),
   // 使用 background 做绝对定位，复刻 fancyhdr 的页脚与续页页眉
   background: context {
     // -------- 页脚（中心页码 + 右侧姓名栏） --------
